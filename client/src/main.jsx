@@ -1,17 +1,30 @@
 import React from "react";
+import "./index.css";
+import { Provider } from "react-redux";
 import ReactDOM from "react-dom/client";
-import App from "./App.jsx";
-// import "./index.css";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import App from "./App.jsx";
+import CreatePostPage from "./Pages/CreatePostPage.jsx";
 import SignInPage from "./Pages/SignInPage.jsx";
 import SignUpPage from "./Pages/SignUpPage.jsx";
-import ContextProvider from "./Context/Context.jsx";
-import CreatePostPage from "./Pages/CreatePostPage.jsx";
+
+
+import store from "./sore.js";
+import Posts from "./Components/Posts.jsx";
+import UpdatePost from "./Components/UpdatePost.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App/>,
     children: [
+      {
+        index: true,
+        element: <Posts/>
+      },
+      {
+        path: "/update-post/:id",
+        element: <UpdatePost/>
+      },
       {
         path: "/login",
         element: <SignInPage/>
@@ -32,9 +45,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <ContextProvider>
-    <RouterProvider router={router}/>
-    </ContextProvider>
-   
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </React.StrictMode>
 );

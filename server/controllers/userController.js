@@ -9,7 +9,7 @@ export const getUserAll = async(req, res) => {
 };
 
 export const registerUser = async (req, res) => {
-  const { firstName, lastName, username, email, password } = req.body;
+  const {username, email, password } = req.body;
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -27,14 +27,12 @@ export const registerUser = async (req, res) => {
     }
 
     const user = new User({
-      firstName,
-      lastName,
       username: username.toLowerCase(),
       email: email.toLowerCase(),
       password: hashedPassword,
     });
     await user.save();
-    return res.status(201).send("Successfully Registered");
+    return res.status(201).send(user);
   } catch (err) {
     res.status(400).send("Unknow Error In Users ");
     console.log(`${chalk.red.bold(err.message)}`);

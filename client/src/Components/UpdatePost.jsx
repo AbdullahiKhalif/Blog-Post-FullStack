@@ -1,15 +1,23 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import React, { useRef, useState } from "react";
 import {
-  useAddPostMutation
+  useAddPostMutation,
+  useGetPostInfoQuery,
+  useUpdatePostMutation,
 } from "../Features/api/postApiSlice";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const CreatePost = () => {
-  const [addPost] = useAddPostMutation();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
+const UpdatePost = () => {
+  const { id } = useParams();
+
+  const { data: post } = useGetPostInfoQuery(id);
+  const [addPost, { isLoading }] = useAddPostMutation();
+  const [updatePost] = useUpdatePostMutation();
+
+  const imageRef = useRef(null);
+  const [title, setTitle] = useState(post?.title);
+  const [content, setContent] = useState(post?.content);
+  const [image, setImage] = useState(post?.image);
 
   const navigate = useNavigate();
 
@@ -17,25 +25,22 @@ const CreatePost = () => {
     setTitle("");
     setContent("");
     setImage(null);
+    imageRef.current.value = "";
   };
   const handleSumbit = (e) => {
     e.preventDefault();
-    if (title && content) {
-      handleAddPost({title, content, image });
+    if (content && image) {
+      handleUpdatePost();
     } else {
-      toast.error("You must provide a post title, content and image!");
+      toast.error("You must provide a post content or image!");
     }
   };
-  const handleAddPost = (post) => {
+  const handleUpdatePost = () => {
     console.log("post", post);
-    addPost(post)
+    updatePost({ postId: post._id, updatedPost: { title, content, image } })
       .unwrap()
-      .then(() => navigate('/'))
-      .catch((err) => {
-        console.log("error creating post", err);
-        toast.error(err.data);
-        return;
-      });
+      .then(() =>navigate('/'))
+      .catch((err) => console.log("error updating post", err));
   };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -76,8 +81,9 @@ const CreatePost = () => {
               <div className="form-group">
                 <input
                   type="file"
+                  ref={imageRef}
                   // value={image}
-                  onChange={(e) => setImage(e.target.files[0])}
+                  onChange={handleImageChange}
                   // placeholder="Enter Your Title"
                   className="p-2 mt-2 text-md w-full bg-gray-100 rounded-md shadow-md outline-none focus:border border-green-800"
                 />
@@ -85,7 +91,7 @@ const CreatePost = () => {
                 {image && (
                   <div className="text-center my-4">
                     <img
-                      src={URL.createObjectURL(image)}
+                      src={post ? post?.image : URL.createObjectURL(image)}
                       alt="Post Image"
                       className="w-full h-64 rounded-md object-cover border border-green-800 shadow"
                     />
@@ -96,7 +102,7 @@ const CreatePost = () => {
                     type="submit"
                     className="text-center px-3 w-24 py-2 rounded-lg bg-green-900 text-white focus:border-none"
                   >
-                   Publish
+                    Update
                   </button>
                 </div>
               </div>
@@ -108,4 +114,4 @@ const CreatePost = () => {
   );
 };
 
-export default CreatePost;
+export default UpdatePost;

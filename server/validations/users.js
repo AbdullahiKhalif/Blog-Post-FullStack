@@ -1,8 +1,6 @@
 import Joi from "joi";
 export const regsiterUserValidation = async(req, res, next) => {
     const schema = Joi.object({
-        firstName: Joi.string().min(3).max(20).required(),
-        lastName: Joi.string().min(3).max(20).required(),
         username: Joi.string().min(3).max(20).required(),
         email: Joi.string().email().required(),
         password: Joi.string().min(5).max(20).required(),
