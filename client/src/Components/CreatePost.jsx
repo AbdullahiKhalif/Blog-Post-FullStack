@@ -9,7 +9,7 @@ const CreatePost = () => {
   const [addPost] = useAddPostMutation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [image, setImage] = useState(null);
+  // const [image, setImage] = useState(null);
 
   const navigate = useNavigate();
 
@@ -20,11 +20,7 @@ const CreatePost = () => {
   };
   const handleSumbit = (e) => {
     e.preventDefault();
-    if (title && content) {
-      handleAddPost({title, content, image });
-    } else {
-      toast.error("You must provide a post title, content and image!");
-    }
+      handleAddPost({title, content });
   };
   const handleAddPost = (post) => {
     console.log("post", post);
@@ -74,23 +70,7 @@ const CreatePost = () => {
               </div>
 
               <div className="form-group">
-                <input
-                  type="file"
-                  // value={image}
-                  onChange={(e) => setImage(e.target.files[0])}
-                  // placeholder="Enter Your Title"
-                  className="p-2 mt-2 text-md w-full bg-gray-100 rounded-md shadow-md outline-none focus:border border-green-800"
-                />
 
-                {image && (
-                  <div className="text-center my-4">
-                    <img
-                      src={URL.createObjectURL(image)}
-                      alt="Post Image"
-                      className="w-full h-64 rounded-md object-cover border border-green-800 shadow"
-                    />
-                  </div>
-                )}
                 <div className="flex justify-end items-end pt-6">
                   <button
                     type="submit"

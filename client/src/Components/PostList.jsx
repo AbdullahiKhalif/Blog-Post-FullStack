@@ -1,5 +1,6 @@
 import React from "react";
 import { toast } from "react-toastify";
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import { useDeletePostMutation, useGetPostsQuery } from "../Features/api/postApiSlice";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -34,7 +35,7 @@ const PostList = () => {
                     {post.author.username}
                   </h2>
                   <div className="flex -mt-[5px]">
-                    <p className="text-light text-[12px]">{post.createdAt}</p>
+                    <p className="text-light text-[12px]">{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</p>
                   </div>
                 </div>
               </div>

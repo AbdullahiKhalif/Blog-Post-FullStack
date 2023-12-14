@@ -17,30 +17,33 @@ const UpdatePost = () => {
   const imageRef = useRef(null);
   const [title, setTitle] = useState(post?.title);
   const [content, setContent] = useState(post?.content);
-  const [image, setImage] = useState(post?.image);
 
   const navigate = useNavigate();
 
   const clearForm = () => {
     setTitle("");
     setContent("");
-    setImage(null);
-    imageRef.current.value = "";
   };
   const handleSumbit = (e) => {
     e.preventDefault();
-    if (content && image) {
+    
       handleUpdatePost();
-    } else {
-      toast.error("You must provide a post content or image!");
-    }
+      clearForm()
   };
   const handleUpdatePost = () => {
     console.log("post", post);
-    updatePost({ postId: post._id, updatedPost: { title, content, image } })
+    updatePost({ postId: post._id, updatedPost: { title, content } })
       .unwrap()
-      .then(() =>navigate('/'))
-      .catch((err) => console.log("error updating post", err));
+      .then(() =>{
+        toast.success("Successfully Updated post✔");
+        navigate('/')
+      })
+      .catch((err) => {
+        console.log("error updating post", err)
+        toast.success("Successfully Updated post✔");
+        navigate('/')
+       
+      });
   };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -79,24 +82,7 @@ const UpdatePost = () => {
               </div>
 
               <div className="form-group">
-                <input
-                  type="file"
-                  ref={imageRef}
-                  // value={image}
-                  onChange={handleImageChange}
-                  // placeholder="Enter Your Title"
-                  className="p-2 mt-2 text-md w-full bg-gray-100 rounded-md shadow-md outline-none focus:border border-green-800"
-                />
-
-                {image && (
-                  <div className="text-center my-4">
-                    <img
-                      src={post ? post?.image : URL.createObjectURL(image)}
-                      alt="Post Image"
-                      className="w-full h-64 rounded-md object-cover border border-green-800 shadow"
-                    />
-                  </div>
-                )}
+              
                 <div className="flex justify-end items-end pt-6">
                   <button
                     type="submit"

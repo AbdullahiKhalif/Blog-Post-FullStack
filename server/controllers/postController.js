@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import Post from "../model/Post.js";
-import cloudinary from "../config/cloudinary.js";
 
 // get All posts
 export const getAllPosts = async (req, res) => {
@@ -33,23 +32,9 @@ export const getPostInfo = async (req, res) => {
 export const createPost = async (req, res) => {
   try {
     const { title, content, image } = req.body;
-    let result;
-    if (req.file) {
-      let encodedImage = `data:image/jpg;base64,${req.file.buffer.toString(
-        "base64"
-      )}`;
-
-      result = await cloudinary.uploader.upload(encodedImage, {
-        resource_type: "image",
-        transformation: [{ width: 400, height: 400, crop: "limit" }],
-        encoding: "base64",
-        folder: "blog-post",
-      });
-    }
     const newPost = new Post({
       title,
       content,
-      image: result?.url || null,
       author: req.user._id,
     });
     await newPost.save();
@@ -61,53 +46,34 @@ export const createPost = async (req, res) => {
 };
 
 // updatePost
-export const updatePost = async(req, res) => {
-  try{
-      var updatedFelids = {
-          content: req.body.content
-      }
-      const postExists = await Post.findById(req.params.id);
-      
-      if(!postExists) return res.status(404).send("Not Found This Post");
+export const updatePost = async (req, res) => {
+  try {
+
+      const { title, content } = req.body;
+
+      const post = await Post.findById(req.params.id);
+
+      if (!post) return res.status(404).send("Not Found");
+
+      // get current user
 
       const currentUser = req.user._id;
 
-      if(currentUser.toString() != postExists.author.toString()){
-          return res.status(403).send("You do not have permission to update this post!");
+      if (currentUser.toString() !== post.author.toString()) {
+          return res.status(403).send("posts must update the original author ");
       }
-      let result;
 
+      // update post now
+      await Post.findOneAndUpdate({ _id: req.params.id }, { title, content }, { new: true });
 
-      const isExists = await Post.findById(req.params.id);
+      res.status(200).send("updated successfully");
 
-      if (!isExists) return res.status(400).send("post not found");
-
-
-      if (req.file) {
-
-          let encodedImage = `data:image/jpg;base64,${req.file.buffer.toString('base64')}`;
-
-          result = await cloudinary.uploader.upload(encodedImage, {
-              resource_type: 'image',
-              transformation: [
-                  { width: 400, height: 400, crop: "limit" }
-              ],
-              encoding: 'base64',
-              folder: "posts"
-          });
-
-          updatedFelids.image = result.url;
-
-      }
-      const post = await Post.findByIdAndUpdate(req.params.id, updatedFelids, { new: true });
-
-      return res.status(200).send(post);
-
-  }catch(err){
-      console.log(`${chalk.red.bold("ERROR At Update Post")}. ${err}`)
-      res.status(400).send(err.message)
+  } catch (err) {
+      console.log("error updating post", err);
+      res.status(400).send("error updating post");
   }
-}
+};
+
 
 // delete post
 export const deletePost = async (req, res) => {

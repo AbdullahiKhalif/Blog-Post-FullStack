@@ -22,19 +22,11 @@ const postApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Post"],
     }),
     updatePost: builder.mutation({
-      query: ({ postId, updatedPost }) => {
-        const formData = new FormData();
-        formData.append("content", updatedPost.title);
-        formData.append("content", updatedPost.content);
-        formData.append("image", updatedPost.image);
-
-        console.log("updatePost", updatedPost);
-        return {
-          url: `/posts/${postId}`,
-          method: "PUT",
-          body: formData,
-        };
-      },
+      query: ({ postId, updatedPost }) => ({
+        url: `/posts/${postId}`,
+        method: "PUT",
+        body: updatedPost,
+      }),
       invalidatesTags: ["Post"],
     }),
     deletePost: builder.mutation({
