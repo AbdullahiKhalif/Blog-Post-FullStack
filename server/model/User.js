@@ -3,8 +3,19 @@ const Schema = mongoose.Schema;
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
+        unique: true,
         required: true,
-        unique: true
+        validate: [
+            {
+                validator: function (value) {
+
+                    // Regular expression
+
+                    return /^[A-z][A-Za-z0-9-_]{3,23}$/.test(value);
+                },
+                message: "username does not have to special characters"
+            }
+        ]
     },
     email: {
         type: String,

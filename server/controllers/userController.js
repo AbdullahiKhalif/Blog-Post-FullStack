@@ -34,7 +34,7 @@ export const registerUser = async (req, res) => {
     await user.save();
     return res.status(201).send(user);
   } catch (err) {
-    res.status(400).send("Unknow Error In Users ");
+    res.status(400).send(err.message);
     console.log(`${chalk.red.bold(err.message)}`);
   }
 };
